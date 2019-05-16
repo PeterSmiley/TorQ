@@ -59,6 +59,9 @@ startline() {
     sline="$sline$a";                                                                               # append to startup line
   done
   qcmd=$(getfield "$procno" "qcmd")
+  if [ -z $qcmd ]; then                                                                             # if qcmd is undefined then default to q
+    qcmd="q"
+  fi
   sline="$qcmd $sline $(getfield "$procno" extras) -procfile $CSVPATH $EXTRAS"                      # append csv file and extra arguments to startup line
   echo "$sline"
  }
@@ -102,8 +105,8 @@ summary() {
     printf "%-8s | %-14s | %-6s |\n" "$(date '+%H:%M:%S')" "$1" "down"                              # summary table row for down process
   else
     pid=$((findproc "$1")|awk 'END{print}')
-    port=$(netstat -nlp 2>/dev/null | grep "$pid" | awk '{ print $4 }' | head -1 | awk -F: '{ print $2 }')  # get port process is running on
-    printf "%-8s | %-14s | %-6s | %-6s | %-6s\n" "$(date '+%H:%M:%S')" "$1" "up" "$port" "$pid"     # summary table row for running process    
+    port=$(echo $(netstat -nlp 2>/dev/null | grep "$pid" | awk '{ print $4 }' | awk -F: '{ print $2 }'))  # get port process is running on
+    printf "%-8s | %-14s | %-6s | %-6s | %-6s\n" "$(date '+%H:%M:%S')" "$1" "up" "$pid" "$port"     # summary table row for running process
   fi
  }
 
@@ -260,7 +263,7 @@ rundebug() {
 runsummary() {
   allcsv "$*";
   PROCS=$(awk -F, '{if(NR>1) print $4}' "$CSVPATH");
-  printf "%-8s | %-14s | %-6s | %-6s | %-6s\n" "TIME" "PROCESS" "STATUS" "PORT" "PID"
+  printf "%-8s | %-14s | %-6s | %-6s | %-6s\n" "TIME" "PROCESS" "STATUS" "PID" "PORT"
   for p in $PROCS; do
     summary "$p";
   done
@@ -316,6 +319,12 @@ case $1 in
     ;;
   stop)
     stopprocs "$@";
+    ;;
+  restart)
+    checkextrascsv "$*";
+    echo Restarting $PROCS...
+    stopprocs "$@";
+    startprocs "$*";
     ;;
   debug)
     rundebug "$@";
