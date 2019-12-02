@@ -1,7 +1,15 @@
 #!/bin/bash
 
-jupyter nbconvert --execute --to html jnbchecks.ipynb
+/usr/local/bin/jupyter-nbconvert --execute --to html /home/nwatterson/jupyter_torQ/deploy/TorQ/jnbchecks.ipynb
 
-mail -A ./jnbchecks.html -s "Jupyter notebook checks" nicole.watterson@aquaq.co.uk
+echo "Jupyter notebook checks" | mail -A ./jnbchecks.html -s "Jupyter notebook checks" example@domain.com 
+
+read -p "Waiting for e-mail to send..." -t 10
+
+echo "E-mailing..."
+
+sleep 10
+
+rm jnbchecks.html
 
 
