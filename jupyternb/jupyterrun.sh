@@ -24,7 +24,7 @@ JNOTEBOOK=${TORQJUPYTER}/jnbchecks.ipynb
 JUPYTEREMAIL="nicole.watterson@aquaq.co.uk"
 
 #set variable for jupyter-nbconvert command path
-JUPYTERLOC=/usr/local/bin/jupyter-nbconvert
+JUPYTERLOC=/home/$USER/.local/bin/jupyter-nbconvert
 
 #set variable for HTML version of jupyter notebook
 JUPYTERHTML=${TORQJUPYTER}/jnbchecks.html
@@ -46,5 +46,12 @@ echo \"New Jupyter Notebook Generated\" | mail -A ${JUPYTERHTML} -s \"New Jupyte
 #Remove most recent notebook, so previous notebooks are not sent
 rm ${JUPYTERHTML}" > ${JNBCRONSCRIPT}
 
-#generate the line to be run in crontab itself 
-(crontab -l; echo -e " BASH=/bin/bash\n TORQHOME=${TORQHOME}\n */5 * * * * cd ${TORQHOME}; bash ${JNBCRONSCRIPT}") | crontab -
+#generate the line to be run in crontab itself
+if crontab -l | grep -q 'jnbcron';then
+        echo "Crontab exists"
+else
+        echo "Crontab does not exist. Creating crontab..."
+        (crontab -l; echo -e " BASH=/bin/bash\n TORQHOME=${TORQHOME}\n */5 * * * * cd ${TORQHOME}; bash ${JNBCRONSCRIPT}") | crontab -
+
+fi
+
