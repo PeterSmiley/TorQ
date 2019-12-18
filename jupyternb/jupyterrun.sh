@@ -21,7 +21,7 @@ fi
 JNOTEBOOK=${TORQJUPYTER}/jnbchecks.ipynb
 
 #set user email variable
-JUPYTEREMAIL="nicole.watterson@aquaq.co.uk"
+JUPYTEREMAIL="putyouremailhere@example.com"
 
 #set variable for jupyter-nbconvert command path
 JUPYTERLOC=/home/$USER/.local/bin/jupyter-nbconvert
